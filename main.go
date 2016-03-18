@@ -11,10 +11,14 @@ import (
 )
 
 func main() {
+
+	InitLogs(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+
 	r := mux.NewRouter()
 	r.HandleFunc("/api/copy", CopyCloudFile)
 
-	InitLogs(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	http.Handle("/", r)
+
 }
 
 func CopyCloudFile(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +34,7 @@ func CopyCloudFile(w http.ResponseWriter, r *http.Request) {
 	destBucket := r.FormValue("destBucket")
 	destFile := r.FormValue("destFile")
 
-	cf := sisyphus.NewCloudFiles(apiUser, apiKey)
+	cf := gocloudfiles.NewCloudFiles(apiUser, apiKey)
 	if err := cf.Authorize(); err != nil {
 		w.WriteHeader(400)
 		fmt.Println(err.Error())
