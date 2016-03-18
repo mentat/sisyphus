@@ -5,9 +5,24 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
 )
+
+var (
+	TestUserName = os.Getenv("TEST_USERNAME")
+	TestApiKey   = os.Getenv("TEST_KEY")
+)
+
+func TestMain(m *testing.M) {
+	if TestUserName == "" || TestApiKey == "" {
+		fmt.Println("Please set the environment variables TEST_USERNAME and TEST_KEY")
+		os.Exit(1)
+	} else {
+		os.Exit(m.Run())
+	}
+}
 
 func TestApiHandler(t *testing.T) {
 	/*

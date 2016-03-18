@@ -17,7 +17,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/api/copy", CopyCloudFile)
 
-	http.Handle("/", r)
+	http.ListenAndServe("/", r)
 
 }
 
