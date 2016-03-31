@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"gocloudfiles"
 	"io/ioutil"
@@ -11,6 +12,7 @@ import (
 )
 
 var JobStatus *ThreadSafeMap
+var GlobalConfig *ServerConfig
 
 func Router() *mux.Router {
 	r := mux.NewRouter()
@@ -21,12 +23,27 @@ func Router() *mux.Router {
 
 func main() {
 
+	fileName := os.Getenv("SISYPHUS_CONFIG_FILE")
+	if fileName == "" {
+		fileName = "/etc/sisyphus/sisyphus.ini"
+	}
+
+	flag.StringVar(&fileName, "config", fileName, "Configuration file.")
+	flag.Parse()
+
+	config, err := ParseConfigFile(fileName)
+	GlobalConfig = config
+
+	if err != nil {
+		fmt.Println("The configuration file could not be parsed:", err)
+		os.Exit(1)
+	}
+
 	JobStatus = NewThreadSafeMap()
 
 	InitLogs(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
 
-	http.Handle("/", Router())
-	http.ListenAndServe(":12345", nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", config.BindPort), Router())
 }
 
 func runCopy(cf *gocloudfiles.CloudFiles, requestID, sourceDC, sourceBucket,
