@@ -13,8 +13,8 @@ It relies on gocloudfiles: https://github.com/mentat/gocloudfiles
 ## download
 
     cd $GOPTH/src
-    git clone git@github.com:mentat/gocloudfiles.git
-    git clone git@github.com:mentat/sisyphus.git
+    go get github.com/mentat/gocloudfiles
+    go get github.com/mentat/sisyphus
 
 ## Testing
 
